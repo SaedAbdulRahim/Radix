@@ -1,25 +1,10 @@
-import streamlit as st
+def validate_integer_list(input_list):
+    try:
+        return [int(i) for i in input_list]
+    except ValueError:
+        raise ValueError("List must contain only integers.")
 
-def display_buckets(buckets):
-    st.write("### Buckets")
-    cols = st.columns(len(buckets))
-    for i, bucket in enumerate(buckets):
-        with cols[i]:
-            st.write(f"**{i}**")
-            for item in bucket:
-                st.write(item)
-
-def get_buckets_integers(arr, digit):
-    buckets = [[] for _ in range(10)]
-    for num in arr:
-        index = (num // 10**digit) % 10
-        buckets[index].append(num)
-    return buckets
-
-def get_buckets_strings(arr, char_index):
-    buckets = [[] for _ in range(27)]
-    for word in arr:
-        char = word[char_index] if char_index < len(word) else ' '
-        index = 0 if char == ' ' else ord(char.lower()) - 96
-        buckets[index].append(word)
-    return buckets
+def validate_string_list(input_list):
+    if not all(isinstance(s, str) for s in input_list):
+        raise ValueError("List must contain only strings.")
+    return input_list
