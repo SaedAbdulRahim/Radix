@@ -31,17 +31,13 @@ def radix_sort_strings(arr):
         return []
 
     max_len = max(len(s) for s in arr)
-
-    # Pad strings with space or null character to make equal length
-    padded = [s.ljust(max_len) for s in arr]
+    padded = [s.ljust(max_len) for s in arr]  # pad with spaces
 
     for i in range(max_len - 1, -1, -1):
         buckets = [[] for _ in range(256)]
         for s in padded:
-            ch = s[i]
-            buckets[ord(ch)].append(s)
+            index = ord(s[i])
+            buckets[index].append(s)
         padded = [s for bucket in buckets for s in bucket]
 
-    # Remove padding before returning
-    return [s.rstrip() for s in padded]
-
+    return [s.rstrip() for s in padded]  # remove padding
