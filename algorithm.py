@@ -29,11 +29,19 @@ def radix_sort_integers(arr):
 def radix_sort_strings(arr):
     if not arr:
         return []
+
     max_len = max(len(s) for s in arr)
+
+    # Pad strings with space or null character to make equal length
+    padded = [s.ljust(max_len) for s in arr]
+
     for i in range(max_len - 1, -1, -1):
-        buckets = [[] for _ in range(256)]  # ASCII size
-        for s in arr:
-            index = ord(s[i]) if i < len(s) else 0
-            buckets[index].append(s)
-        arr = [s for bucket in buckets for s in bucket]
-    return arr
+        buckets = [[] for _ in range(256)]
+        for s in padded:
+            ch = s[i]
+            buckets[ord(ch)].append(s)
+        padded = [s for bucket in buckets for s in bucket]
+
+    # Remove padding before returning
+    return [s.rstrip() for s in padded]
+
