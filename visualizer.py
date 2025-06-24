@@ -29,31 +29,24 @@ def visualize_integer_sort(arr):
     return arr
 
 def visualize_string_sort(arr):
-    st.subheader("🔤 String Radix Sort Visualization")
+    st.subheader("String Radix Sort Visualization")
     if not arr:
-        st.warning("Empty input.")
         return []
 
     max_len = max(len(s) for s in arr)
-    step = 1
+    padded = [s.ljust(max_len) for s in arr]  # pad with spaces
 
     for i in range(max_len - 1, -1, -1):
-        st.markdown(f"### Step {step}: Sorting by character at position {i}")
         buckets = [[] for _ in range(256)]
+        for s in padded:
+            index = ord(s[i])
+            buckets[index].append(s)
 
-        for s in arr:
-            char_index = ord(s[i]) if i < len(s) else 0
-            buckets[char_index].append(s)
+        # Display only non-empty buckets
+        st.write(f"**Pass (char index={i}):**", [bucket for bucket in buckets if bucket])
+        time.sleep(0.5)
 
-        # Show only non-empty buckets
-        display_buckets = {f"{chr(idx)} ({idx})": buckets[idx] 
-                           for idx in range(256) if buckets[idx]}
-        bucket_df = pd.DataFrame(dict(sorted(display_buckets.items())))
-        st.dataframe(bucket_df)
+        padded = [s for bucket in buckets for s in bucket]
 
-        arr = [s for bucket in buckets for s in bucket]
-        st.success(f"After Step {step}: {arr}")
-        time.sleep(1)
-        step += 1
-
-    return arr
+    result = [s.rstrip() for s in padded]
+    return result
