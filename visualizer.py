@@ -1,54 +1,59 @@
 import streamlit as st
+import pandas as pd
 import time
-
-def draw_buckets(buckets, title=""):
-    st.markdown(f"### {title}")
-    cols = st.columns(len(buckets))
-    for i, col in enumerate(cols):
-        with col:
-            col.markdown(f"**Bucket {i}**")
-            if not buckets[i]:
-                col.markdown("*Empty*")
-            for val in buckets[i]:
-                col.markdown(f"<div style='padding:6px; margin:4px 0; background-color:#f1f3f5; border-radius:6px; text-align:center'>{str(val)}</div>", unsafe_allow_html=True)
-
-def draw_array(arr, title="Array"):
-    st.markdown(f"### {title}")
-    if not arr:
-        st.warning("Array is empty.")
-        return
-    cols = st.columns(len(arr))
-    for i, col in enumerate(cols):
-        col.markdown(f"<div style='padding:10px; background-color:#e0f7fa; border-radius:6px; text-align:center; font-weight:bold'>{str(arr[i])}</div>", unsafe_allow_html=True)
 
 def visualize_integer_sort(arr):
     st.subheader("🔢 Integer Radix Sort Visualization")
-    draw_array(arr, "Original Array")
-
-    if not arr:
-        return []
-
-    max_num = max(arr)
+    max_num = max(arr) if arr else 0
     exp = 1
     step = 1
 
     while max_num // exp > 0:
-        st.markdown(f"## Step {step}: Sorting by digit (exp = {exp})")
+        st.markdown(f"### Step {step}: Sorting by digit at exp = {exp}")
         buckets = [[] for _ in range(10)]
 
         for num in arr:
             index = (num // exp) % 10
             buckets[index].append(num)
 
-        draw_buckets(buckets, f"Buckets for exp={exp}")
-        time.sleep(1)
+        # Visual bucket display
+        bucket_df = pd.DataFrame({f'Bucket {i}': pd.Series(buckets[i]) for i in range(10)})
+        st.dataframe(bucket_df)
 
         arr = [num for bucket in buckets for num in bucket]
-        draw_array(arr, "Array After Re-collection")
-        time.sleep(1)
-
+        st.success(f"After Step {step}: {arr}")
         exp *= 10
         step += 1
 
-    st.success("✅ Sorting complete!")
+        time.sleep(1)
+    return arr
+
+def visualize_string_sort(arr):
+    st.subheader("🔤 String Radix Sort Visualization")
+    if not arr:
+        st.warning("Empty input.")
+        return []
+
+    max_len = max(len(s) for s in arr)
+    step = 1
+
+    for i in range(max_len - 1, -1, -1):
+        st.markdown(f"### Step {step}: Sorting by character at position {i}")
+        buckets = [[] for _ in range(256)]
+
+        for s in arr:
+            char_index = ord(s[i]) if i < len(s) else 0
+            buckets[char_index].append(s)
+
+        # Show only non-empty buckets
+        display_buckets = {f"{chr(idx)} ({idx})": buckets[idx] 
+                           for idx in range(256) if buckets[idx]}
+        bucket_df = pd.DataFrame(dict(sorted(display_buckets.items())))
+        st.dataframe(bucket_df)
+
+        arr = [s for bucket in buckets for s in bucket]
+        st.success(f"After Step {step}: {arr}")
+        time.sleep(1)
+        step += 1
+
     return arr
