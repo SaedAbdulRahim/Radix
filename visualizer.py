@@ -46,9 +46,15 @@ def visualize_string_sort(arr):
             buckets[char_index].append(s)
 
         # Show only non-empty buckets
-        display_buckets = {f"{chr(idx)} ({idx})": buckets[idx] 
+        display_buckets = {f"{chr(idx) if idx >= 32 and idx < 127 else idx} ({idx})": buckets[idx] 
                            for idx in range(256) if buckets[idx]}
-        bucket_df = pd.DataFrame(dict(sorted(display_buckets.items())))
+        
+        # Find the max bucket length
+        max_bucket_len = max(len(lst) for lst in display_buckets.values())
+        # Pad each bucket to max length
+        padded_buckets = {k: v + [""] * (max_bucket_len - len(v)) for k, v in display_buckets.items()}
+        
+        bucket_df = pd.DataFrame(padded_buckets)
         st.dataframe(bucket_df)
 
         arr = [s for bucket in buckets for s in bucket]
